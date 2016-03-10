@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Task SVARYK </title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="css/notification/normalize.css" />  	  
+        <link rel="stylesheet" type="text/css" href="css/notification/ns-default.css" />
+        <link rel="stylesheet" type="text/css" href="css/notification/ns-style-growl.css" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">           
+        <style>
+            .container
+            {
+                margin-top: 50px;
+            }
+            li
+            {
+                margin-top: 20px;
+            }
+            a
+            {
+                cursor: pointer;
+                margin-left: 20px;
+            }
+            .ns-type-error
+            { 
+                background-color: red;
+            }
+        </style>    
+    </head> 
+    <body>
+        <div class ="container">               
+            <ul>
+                <li>элемент списка <span>1</span><a><i class="fa fa-times"></i></a></li>
+                <li>элемент списка <span>2</span><a><i class="fa fa-times"></i></a></li>
+                <li>элемент списка <span>3</span><a><i class="fa fa-times"></i></a></li>
+                <li>элемент списка <span>4</span><a><i class="fa fa-times"></i></a></li>
+                <li>элемент списка <span>5</span><a><i class="fa fa-times"></i></a></li>      
+            </ul>    
+            <button class="add btn btn-info">Добавить элемент списка</button>
+        </div>
+        
+        <!-- modal for remove LI-->
+
+   <div class="modal fade" id="remove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+     <div class="modal-dialog">
+       <div style ="margin-top: 100px;"  class="modal-content">
+         <div class="modal-header">
+           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>                
+         </div>
+         <div class="modal-body">
+           <div class="container-fluid">
+               <div class="row">
+                   <div class="account-col text-center modalNewUserStyle">
+                       <h2>Будет удален элемент под номером</h2>  
+                       <h1></h1>                  
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
+                            <button type="button" class="btn btn-primary">Подтвердить</button>
+                        </div> 
+                   </div>
+               </div>
+           </div>        
+         </div>             
+       </div><!-- /.modal-content -->
+     </div><!-- /.modal-dialog -->
+   </div><!-- /.modal -->      
+        
+        <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>        
+        <script src="js/notification/modernizr.custom.js"></script>
+         <script src="js/notification/classie.js"></script>        
+         <script src="js/notification/notificationFx.js"></script> 
+         
+         <script>             
+                var notification;
+                $(function()
+                { 
+                    $("a").on("click",function()
+                    {
+                       modal($(this));                       
+                   });
+                    
+                    $(".add").on("click",function()
+                    {
+                        var i = $("<i>").addClass("fa fa-times");
+                        var a = $("<a>").append(i);
+                        var span = $("<span>");
+                        var li = $("<li>");
+                        var build = li.html("элемент списка ").append(span).append(a);                        
+                        $("ul").append(build);
+                        if(notification)
+                            $(notification.ntf).remove();
+                        new_NotificationFx("элемент добавлен",'success',2000);
+                        number();                        
+                        $("a").on("click",function()
+                        {
+                            modal($(this));        
+                        });
+                    });                    
+                });
+                
+                function new_NotificationFx(message,type,ttl)
+                {
+                    notification = new NotificationFx(   
+                                        {
+                                           wrapper : document.body,
+                                           message : message,
+                                           layout : 'growl',
+                                           effect : 'jelly',
+                                           type : type,
+                                           ttl : ttl                               
+                                       });
+                    notification.show();  
+                }
+                
+                function remove(li)
+                {
+                       $(li).closest("li").remove();
+                       if(notification)
+                           $(notification.ntf).remove();
+                       new_NotificationFx("элемент удален",'error',1500); 
+                }
+                
+                function number ()
+                {
+                  var number=1;
+                        $("li span").each(function()
+                        {  
+                             $(this).html(number);
+                             number++;
+                        });  
+                }
+                
+                function modal(thisRemove)
+                {
+                    
+                       var thisNumber = thisRemove.closest("li").find("span").html();
+                       $('#remove').modal('show');
+                       $('#remove .account-col h1').html(thisNumber);
+                       $("#remove .modal-footer .btn-primary").data("this", thisRemove);     
+                       $('#remove .modal-footer .btn-primary').on("click", function()
+                            { 
+                                $('#remove').modal('hide');
+                                remove($(this).data("this")); 
+                                number();                        
+                            }); 
+                }
+         </script>
+   
+    </body>    
+</html> 
